@@ -2,9 +2,8 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
-use std::fmt::{self, Display, Formatter};
+use std::fmt::{self, Debug, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
 
@@ -29,13 +28,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T:PartialOrd+Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T:PartialOrd+Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,14 +68,38 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	pub fn merge(mut list_a:LinkedList<T>,mut list_b:LinkedList<T>) -> Self
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut list = LinkedList::<T>::new();
+
+        let mut p1=0;
+        let mut p2=0;
+        while p1<list_a.length && p2<list_b.length{
+            let a = list_a.get(p1 as i32).unwrap();
+            let b = list_b.get(p2 as i32).unwrap();
+            if a < b{
+                list.add(a.clone());
+                p1+=1;
+            }else{
+                list.add(b.clone());
+                p2+=1;
+            }
+
         }
+
+        while p1<list_a.length{
+            let a = list_a.get(p1 as i32).unwrap();
+            list.add(a.clone());
+            p1+=1;
+        }
+        while p2<list_b.length{
+            let b = list_b.get(p2 as i32).unwrap();
+            list.add(b.clone());
+            p2+=1;
+        }
+
+
+        list
 	}
 }
 
@@ -135,7 +158,7 @@ mod tests {
 		let vec_a = vec![1,3,5,7];
 		let vec_b = vec![2,4,6,8];
 		let target_vec = vec![1,2,3,4,5,6,7,8];
-		
+
 		for i in 0..vec_a.len(){
 			list_a.add(vec_a[i]);
 		}
